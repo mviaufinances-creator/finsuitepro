@@ -1,5 +1,5 @@
 """
-Paralux Terminal — Web Application
+TM Analytics - Finance — Web Application
 ============================================
 Full-featured financial analysis terminal with:
   - User authentication (register, login, logout, profile management)
@@ -104,8 +104,12 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-API_KEY      = os.environ.get('POLYGON_API_KEY', '')
-FRED_API_KEY = os.environ.get('FRED_API_KEY', '')
+# Terms of Use version — bump this string to force every user to re-accept.
+TERMS_VERSION = '2026.09'
+BRAND_NAME    = 'TM Analytics - Finance'
+
+API_KEY      = os.environ.get('POLYGON_API_KEY', 'tnGHxeqXAnkqoV6pUL2XFjDStejcjhb2')
+FRED_API_KEY = os.environ.get('FRED_API_KEY', 'ff84b526d8ac5d859e49a521ddb0662d')
 # ═══════════════════════════════════════════════════════════════════════════════
 #  DATABASE MODELS
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -122,6 +126,12 @@ class User(db.Model, UserMixin):
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
     watchlist = db.Column(db.Text, default='AAPL,MSFT,GOOGL,TSLA,NVDA')
     theme = db.Column(db.String(10), default='light')
+    terms_accepted_at = db.Column(db.DateTime, nullable=True)
+    terms_version = db.Column(db.String(20), nullable=True)
+
+    @property
+    def has_accepted_terms(self):
+        return bool(self.terms_accepted_at) and self.terms_version == TERMS_VERSION
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -3108,8 +3118,9 @@ def register():
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
-            flash('Account created! You can now sign in.', 'success')
-            return redirect(url_for('login'))
+            login_user(user)
+            session['launch_ack'] = True   # the full terms review replaces the launch reminder
+            return redirect(url_for('terms_accept'))
         except Exception as exc:
             db.session.rollback()
             app.logger.error(f'Register error: {exc}')
@@ -3130,7 +3141,10 @@ def login():
             user.last_login = datetime.utcnow()
             db.session.commit()
             login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next', '') or url_for('dashboard')
+            session.pop('launch_ack', None)  # show the informational reminder on every sign-in
+            next_page = request.args.get('next', '')
+            if not next_page.startswith('/') or next_page.startswith('//'):
+                next_page = url_for('dashboard')
             return redirect(next_page)
         flash('Invalid email or password.', 'danger')
     return render_template('login.html', form=form)
@@ -3199,6 +3213,68 @@ def delete_account():
     logout_user()
     flash('Account deleted.', 'info')
     return redirect(url_for('login'))
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  TERMS OF USE — acceptance gate + launch reminder
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_TERMS_OPEN_ENDPOINTS = {
+    'terms_accept', 'terms_page', 'logout', 'static', 'login', 'register',
+    'health', 'index', 'launch_ack',
+}
+
+@app.before_request
+def _require_terms_acceptance():
+    """Signed-in users may not reach any page or API until they accept the current Terms."""
+    if not current_user.is_authenticated:
+        return None
+    if request.endpoint in _TERMS_OPEN_ENDPOINTS or request.endpoint is None:
+        return None
+    if current_user.has_accepted_terms:
+        return None
+    if request.path.startswith('/api/'):
+        return jsonify({'error': 'Terms of Use must be accepted before using TM Analytics.'}), 403
+    return redirect(url_for('terms_accept'))
+
+
+@app.route('/terms')
+def terms_page():
+    """Public, read-only copy of the Terms of Use."""
+    return render_template('terms.html', terms_version=TERMS_VERSION, mode='read')
+
+
+@app.route('/terms/accept', methods=['GET', 'POST'])
+@login_required
+def terms_accept():
+    if request.method == 'POST':
+        required = ('ack_info', 'ack_no_advice', 'ack_risk', 'ack_data')
+        if not all(request.form.get(k) == 'on' for k in required):
+            flash('Please confirm every acknowledgement to continue.', 'danger')
+            return render_template('terms.html', terms_version=TERMS_VERSION, mode='accept')
+        current_user.terms_accepted_at = datetime.utcnow()
+        current_user.terms_version = TERMS_VERSION
+        db.session.commit()
+        session['launch_ack'] = True
+        flash('Welcome to TM Analytics. Terms accepted.', 'success')
+        return redirect(url_for('dashboard'))
+    if current_user.has_accepted_terms:
+        return redirect(url_for('dashboard'))
+    return render_template('terms.html', terms_version=TERMS_VERSION, mode='accept')
+
+
+@app.route('/launch-ack', methods=['POST'])
+@csrf.exempt
+@login_required
+def launch_ack():
+    """Records that the launch reminder was acknowledged for this browser session."""
+    session['launch_ack'] = True
+    return jsonify({'ok': True})
+
+
+@app.context_processor
+def inject_brand():
+    return {'brand_name': BRAND_NAME, 'terms_version': TERMS_VERSION}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -5627,6 +5703,16 @@ def inject_now():
 
 with app.app_context():
     db.create_all()
+    # Lightweight migration — add Terms columns to existing user tables.
+    try:
+        _cols = {c['name'] for c in db.inspect(db.engine).get_columns('user')}
+        with db.engine.begin() as _conn:
+            if 'terms_accepted_at' not in _cols:
+                _conn.execute(db.text('ALTER TABLE "user" ADD COLUMN terms_accepted_at TIMESTAMP'))
+            if 'terms_version' not in _cols:
+                _conn.execute(db.text('ALTER TABLE "user" ADD COLUMN terms_version VARCHAR(20)'))
+    except Exception as _exc:
+        app.logger.warning(f'Terms column migration skipped: {_exc}')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

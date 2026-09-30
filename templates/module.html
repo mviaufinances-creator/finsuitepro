@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block title %}
-{% if module == 'technical' %}Technical Analysis{% elif module == 'fundamentals' %}SEC Fundamentals{% elif module == 'correlation' %}Correlation Matrix{% elif module == 'global_macro' %}Global Macro Dashboard{% elif module == 'economic' %}Economic Data{% elif module == 'news' %}News & Sentiment{% elif module == 'signal' %}Signal Analysis{% elif module == 'listings' %}Listings Explorer{% endif %} — Paralux Terminal
+{% if module == 'technical' %}Technical Analysis{% elif module == 'fundamentals' %}SEC Fundamentals{% elif module == 'correlation' %}Correlation Matrix{% elif module == 'global_macro' %}Global Macro Dashboard{% elif module == 'economic' %}Economic Data{% elif module == 'news' %}News & Sentiment{% elif module == 'signal' %}Signal Analysis{% elif module == 'listings' %}Listings Explorer{% endif %} — TM Analytics - Finance
 {% endblock %}
 
 {% block content %}
 <!-- ═══════════════ TECHNICAL ANALYSIS ═══════════════ -->
 {% if module == 'technical' %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--blue)">
     <span class="module-header__dot" style="color:var(--blue)">●</span>
     <span class="module-header__title">Technical Analysis</span>
     <span class="module-header__sub">Advanced charting — candlestick, OHLC, line, point & figure</span>
@@ -265,7 +265,7 @@
 
 <!-- ═══════════════ FUNDAMENTALS ═══════════════ -->
 {% elif module == 'fundamentals' %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--gold)">
     <span class="module-header__dot" style="color:var(--gold)">●</span>
     <span class="module-header__title">SEC Fundamentals</span>
     <span class="module-header__sub">XBRL line item charting from SEC EDGAR filings</span>
@@ -391,7 +391,7 @@
 
 <!-- ═══════════════ CORRELATION ═══════════════ -->
 {% elif module == 'correlation' %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--orange)">
     <span class="module-header__dot" style="color:var(--orange)">●</span>
     <span class="module-header__title">Correlation &amp; Regression Analysis</span>
     <span class="module-header__sub">Heatmap · OLS regression · multivariate factor modelling</span>
@@ -576,7 +576,7 @@
 
 <!-- ═══════════════ GLOBAL MACRO ═══════════════ -->
 {% elif module == 'global_macro' %}
-<div class="module-header">
+<div class="module-header" style="--mh:#14B8A6">
     <span class="module-header__dot" style="color:#14B8A6">●</span>
     <span class="module-header__title">Global Macro Dashboard</span>
     <span class="module-header__sub">Equities · Bonds · Yields · Commodities · FX · Crypto · Volatility</span>
@@ -827,7 +827,7 @@
                 <div class="gm-card-hdr">
                     <span style="font-size:1.1rem">🧠</span>
                     <span class="gm-card-hdr__title">AI Market Assessment</span>
-                    <span class="gm-intel-model-tag">Paralux Intelligence Engine v2</span>
+                    <span class="gm-intel-model-tag">TM Intelligence Engine v2</span>
                 </div>
                 <div class="gm-intel-narrative" id="gm-intel-narrative">—</div>
             </div>
@@ -910,7 +910,7 @@
 
 <!-- ═══════════════ ECONOMIC DATA ═══════════════ -->
 {% elif module == 'economic' %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--red)">
     <span class="module-header__dot" style="color:var(--red)">●</span>
     <span class="module-header__title">Economic Data</span>
     <span class="module-header__sub">FRED API — 80+ series, interactive charts &amp; dashboard</span>
@@ -1070,7 +1070,7 @@ updateEconSeries();
 
 <!-- ═══════════════ NEWS & SENTIMENT ═══════════════ -->
 {% elif module == 'news' %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--purple)">
     <span class="module-header__dot" style="color:var(--purple)">●</span>
     <span class="module-header__title">News & Sentiment</span>
     <span class="module-header__sub">LLM-powered sentiment from Polygon.io</span>
@@ -1112,7 +1112,7 @@ updateEconSeries();
 
 <!-- ═══════════════ SIGNAL ANALYSIS ═══════════════ -->
 {% elif module == 'signal' %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--cyan)">
     <span class="module-header__dot" style="color:var(--cyan)">◆</span>
     <span class="module-header__title">Composite Signal Analysis</span>
     <span class="module-header__sub">Technical + Fundamental + Sentiment + Risk</span>
@@ -1247,7 +1247,7 @@ function switchSignalTab(btn, tab){
 
 <!-- ═══════════════ LISTINGS EXPLORER ═══════════════ -->
 {% elif module == 'listings' %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--green)">
     <span class="module-header__dot" style="color:var(--green)">●</span>
     <span class="module-header__title">Listings Explorer</span>
     <span class="module-header__sub">{{ "{:,}".format(le_stats.get('total',0)) }} securities · natural language search &amp; structured filters</span>

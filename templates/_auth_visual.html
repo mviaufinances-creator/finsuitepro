@@ -1,0 +1,14 @@
+{% from "_ui.html" import brand %}
+<section class="tm-auth__visual" style="background-image:url('{{ url_for('static', filename='images/' ~ (visual_img or 'paralux_theme.png')) }}')">
+    <a href="{{ url_for('login') }}" style="text-decoration:none">{{ brand('lg') }}</a>
+    <div class="tm-auth__pitch">
+        <span class="tm-eyebrow"><i></i> Market research workspace</span>
+        <h1 class="tm-auth__headline">{{ visual_headline|safe }}</h1>
+        <p class="tm-auth__lede">{{ visual_lede }}</p>
+        <div class="tm-auth__feats">
+            <div class="tm-auth__feat"><i style="background:var(--cyan)"></i><b>Charting</b><span>Candles, 10+ indicators, intraday to max history</span></div>
+            <div class="tm-auth__feat"><i style="background:var(--gold)"></i><b>Fundamentals</b><span>SEC EDGAR XBRL line items &amp; ratios</span></div>
+            <div class="tm-auth__feat"><i style="background:var(--purple)"></i><b>Macro</b><span>FRED series, yields, cross-asset context</span></div>
+        </div>
+    </div>
+</section>

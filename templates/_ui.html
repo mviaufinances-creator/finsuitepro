@@ -1,0 +1,63 @@
+{# ─── TM Analytics - Finance · shared UI macros ─── #}
+
+{% macro mark(cls='tm-brand__mark') -%}
+<svg class="{{ cls }}" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="tmGlass" x1="10" y1="8" x2="36" y2="38" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1B2A4F"/><stop offset="1" stop-color="#0A1022"/>
+    </linearGradient>
+    <linearGradient id="tmEdge" x1="10" y1="8" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/><stop offset=".55" stop-color="#9FE6FF"/><stop offset="1" stop-color="#3CCBFF"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#070B17" stroke="rgba(255,255,255,0.10)"/>
+  <path d="M3 27.5 L17 25.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>
+  <path d="M23 9.5 L35 34 H11 Z" fill="url(#tmGlass)" stroke="url(#tmEdge)" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M23 9.5 L20 34" stroke="#fff" stroke-opacity=".18" stroke-width="1"/>
+  <path d="M29.6 23 L45 16.5" stroke="#3CCBFF" stroke-width="2" stroke-linecap="round"/>
+  <path d="M30.2 24.3 L45 23.5" stroke="#FFB547" stroke-width="2" stroke-linecap="round"/>
+  <path d="M30.8 25.6 L45 30.5" stroke="#9D7BFF" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="23" cy="9.5" r="1.4" fill="#fff"/>
+</svg>
+{%- endmacro %}
+
+{% macro brand(size='') -%}
+<span class="tm-brand {{ 'tm-brand--lg' if size == 'lg' }}">
+  {{ mark() }}
+  <span class="tm-brand__text">
+    <span class="tm-brand__name">TM <em>Analytics</em></span>
+    <span class="tm-brand__sub">Finance</span>
+  </span>
+</span>
+{%- endmacro %}
+
+{% macro icon(name) -%}
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{%- if name == 'home' -%}<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>
+{%- elif name == 'globe' -%}<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/>
+{%- elif name == 'econ' -%}<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/><circle cx="19" cy="8" r="1.2"/>
+{%- elif name == 'list' -%}<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/>
+{%- elif name == 'candles' -%}<path d="M6 3v4M6 17v4M12 2v3M12 15v7M18 5v3M18 16v4"/><rect x="4" y="7" width="4" height="10" rx="1"/><rect x="10" y="5" width="4" height="10" rx="1"/><rect x="16" y="8" width="4" height="8" rx="1"/>
+{%- elif name == 'filing' -%}<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/>
+{%- elif name == 'matrix' -%}<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+{%- elif name == 'signal' -%}<path d="M12 2 20 12 12 22 4 12z"/><path d="M12 7v10M8.5 12h7"/>
+{%- elif name == 'news' -%}<path d="M4 5h13v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v10a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5M8 17h3"/>
+{%- elif name == 'bell' -%}<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+{%- elif name == 'journal' -%}<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 8h7M9 12h5"/>
+{%- elif name == 'user' -%}<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
+{%- elif name == 'logout' -%}<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/>
+{%- elif name == 'search' -%}<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+{%- elif name == 'menu' -%}<path d="M4 6h16M4 12h16M4 18h10"/>
+{%- elif name == 'chev' -%}<path d="m6 9 6 6 6-6"/>
+{%- elif name == 'arrow' -%}<path d="M5 12h14M13 6l6 6-6 6"/>
+{%- elif name == 'info' -%}<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/>
+{%- elif name == 'shield' -%}<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>
+{%- elif name == 'scale' -%}<path d="M12 3v18M5 21h14"/><path d="M5 7h14"/><path d="m5 7-3 7a3.5 3.5 0 0 0 6 0zM19 7l-3 7a3.5 3.5 0 0 0 6 0z"/>
+{%- elif name == 'alert' -%}<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>
+{%- elif name == 'data' -%}<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>
+{%- elif name == 'check' -%}<path d="M20 6 9 17l-5-5"/>
+{%- elif name == 'lock' -%}<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+{%- elif name == 'doc' -%}<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>
+{%- endif -%}
+</svg>
+{%- endmacro %}

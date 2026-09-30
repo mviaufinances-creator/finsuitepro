@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Profile — Paralux Terminal{% endblock %}
+{% block title %}Profile — TM Analytics - Finance{% endblock %}
 {% block content %}
-<div class="module-header">
+<div class="module-header" style="--mh:var(--cyan)">
     <span class="module-header__dot" style="color:var(--cyan)">●</span>
     <span class="module-header__title">Profile & Settings</span>
     <span class="module-header__sub">Manage your account</span>
@@ -74,7 +74,16 @@
             </form>
         </div>
 
-        <div class="card" style="border-color:rgba(248,113,113,0.3)">
+        <div class="card dash-note">
+            <div class="card__title">Terms of Use &amp; disclosures</div>
+            <p>You accepted <strong style="color:var(--text-primary)">version {{ current_user.terms_version or '—' }}</strong>{% if current_user.terms_accepted_at %} on {{ current_user.terms_accepted_at.strftime('%B %d, %Y at %H:%M UTC') }}{% endif %}. TM Analytics - Finance is an informational platform only and does not provide investment advice.</p>
+            <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+                <a class="btn btn--sm btn--ghost" href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">View full terms</a>
+                <button type="button" class="btn btn--sm btn--ghost" onclick="tmShowReminder()">Show session reminder</button>
+            </div>
+        </div>
+
+        <div class="card" style="border-color:rgba(255,77,106,0.3)">
             <div class="card__title" style="color:var(--red)">Danger Zone</div>
             <p style="font-size:13px;color:var(--text-sec);margin-bottom:12px">
                 Permanently delete your account and all associated data.

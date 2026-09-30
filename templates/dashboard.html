@@ -1,73 +1,96 @@
 {% extends "base.html" %}
-{% block title %}Dashboard — Paralux Terminal{% endblock %}
+{% from "_ui.html" import icon %}
+{% block title %}Overview — TM Analytics - Finance{% endblock %}
 {% block content %}
-<div class="home-hero" style="background-image: url('{{ url_for('static', filename='images/paralux_theme.png') }}');">
-    <div class="home-hero__overlay"></div>
-    <div class="home-hero__scan"></div>
-    <div class="home-hero__corner home-hero__corner--tl"></div>
-    <div class="home-hero__corner home-hero__corner--tr"></div>
-    <div class="home-hero__corner home-hero__corner--bl"></div>
-    <div class="home-hero__corner home-hero__corner--br"></div>
-    <div class="home-hero__content">
-    <div class="home-hero__title">Paralux Terminal</div>
-    <div class="home-hero__sub">Financial Analysis Dashboard · Welcome back, {{ current_user.username }}</div>
-    <div class="home-modules">
-        <a href="{{ url_for('economic') }}" class="home-module home-module--red">
-            <div class="home-module__name" style="color:var(--red)">Economic Data</div>
-            <div class="home-module__desc">FRED macro indicators</div>
-        </a>
-        <a href="{{ url_for('technical') }}" class="home-module home-module--blue">
-            <div class="home-module__name" style="color:var(--blue)">Technical</div>
-            <div class="home-module__desc">SMA · MACD · BB · Stoch</div>
-        </a>
-        <a href="{{ url_for('fundamentals') }}" class="home-module home-module--gold">
-            <div class="home-module__name" style="color:var(--gold)">Fundamentals</div>
-            <div class="home-module__desc">SEC XBRL · Ratios</div>
-        </a>
-        <a href="{{ url_for('correlation') }}" class="home-module home-module--orange">
-            <div class="home-module__name" style="color:var(--orange)">Correlation</div>
-            <div class="home-module__desc">Return heatmap</div>
-        </a>
-        <a href="{{ url_for('news') }}" class="home-module home-module--purple">
-            <div class="home-module__name" style="color:var(--purple)">News & Sentiment</div>
-            <div class="home-module__desc">LLM-powered feed</div>
-        </a>
+<section class="dash-hero">
+    <div class="dash-hero__art" aria-hidden="true"></div>
+    <div>
+        <div class="dash-hero__greet"><i></i><span><span id="dashGreet">Welcome back</span>, {{ current_user.first_name or current_user.username }}</span></div>
+        <h1 class="dash-hero__title">Your market,<br><span>in full spectrum.</span></h1>
+        <p class="dash-hero__lede">Chart price action, read the filings, and put it all in macro context — one workspace for disciplined, independent research.</p>
+        <div class="dash-hero__cta">
+            <a class="btn btn--primary btn--lg" href="{{ url_for('technical') }}">{{ icon('candles') }} Open charting</a>
+            <a class="btn btn--ghost btn--lg" href="{{ url_for('global_macro') }}">{{ icon('globe') }} Global macro</a>
+        </div>
     </div>
-    </div><!-- end home-hero__content -->
-</div><!-- end home-hero -->
+    <aside class="dash-pulse" aria-label="Session">
+        <div class="dash-pulse__head"><b>Session</b><span class="tm-chip" id="dashMkt">NYSE</span></div>
+        <div class="dash-pulse__row"><span>Eastern time</span><strong id="dashET">—</strong></div>
+        <div class="dash-pulse__row"><span>Your time</span><strong id="dashLocal">—</strong></div>
+        <div class="dash-pulse__row"><span>Watchlist</span><strong id="dashWl">—</strong></div>
+        <div class="dash-pulse__row"><span>Terms accepted</span><strong style="color:var(--mint)">v{{ current_user.terms_version or '—' }}</strong></div>
+    </aside>
+</section>
 
+<div class="dash-section-head">
+    <div><h2>Modules</h2><p>Every tool in your workspace, one click away.</p></div>
+</div>
+<div class="dash-modules">
+    {% set mods = [
+        ('technical',    'Technical Analysis', 'Candles, SMA/EMA, RSI, MACD, Bollinger, drawing tools', 'candles', 'var(--blue)',   'CHARTS'),
+        ('fundamentals', 'SEC Fundamentals',   'XBRL line items, ratios and statements from EDGAR',    'filing',  'var(--gold)',   'EDGAR'),
+        ('global_macro', 'Global Macro',       'Equities, yields, FX, commodities and regime context', 'globe',   'var(--teal)',   'CROSS-ASSET'),
+        ('economic',     'Economic Data',      'FRED series — GDP, CPI, labour, rates and more',       'econ',    'var(--magenta)','FRED'),
+        ('correlation',  'Correlation',        'Heatmaps, OLS and multivariate factor studies',        'matrix',  'var(--orange)', 'STATS'),
+        ('signal_page',  'Signal Analysis',    'Composite, rules-based descriptions of trend & momentum','signal', 'var(--mint)',   'MODEL'),
+        ('news',         'News & Sentiment',   'Headlines with automated sentiment scoring',           'news',    'var(--purple)', 'FEED'),
+        ('listings',     'Listings Explorer',  'Search and screen listed stocks and ETFs',             'list',    'var(--green)',  'SCREEN'),
+        ('alerts_page',  'Alert Center',       'Price and indicator alerts, checked on each visit',    'bell',    'var(--red)',    'ALERTS'),
+    ] %}
+    {% for ep, name, desc, ico, color, tag in mods %}
+    <a href="{{ url_for(ep) }}" class="dash-mod" style="--c:{{ color }}">
+        <span class="dash-mod__icon">{{ icon(ico) }}</span>
+        <span class="dash-mod__name">{{ name }}</span>
+        <span class="dash-mod__desc">{{ desc }}</span>
+        <span class="dash-mod__foot">{{ tag }} {{ icon('arrow') }}</span>
+    </a>
+    {% endfor %}
+</div>
+
+<div class="dash-section-head">
+    <div><h2>Your desk</h2><p>Watchlist and recent research activity.</p></div>
+</div>
 <div class="dashboard-grid">
     <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <div class="card__title" style="margin-bottom:0">Watchlist</div>
-            <span style="font-size:11px;color:var(--text-dim)" id="wl-count"></span>
+        <div class="dash-card-head">
+            <div class="card__title">Watchlist</div>
+            <span class="dash-count" id="wl-count"></span>
         </div>
         <div class="wl-add-row">
-            <input type="text" id="wl-input" placeholder="Add ticker (e.g. AAPL)" maxlength="6"
+            <input type="text" id="wl-input" placeholder="Add a ticker, e.g. AAPL" maxlength="10"
                    onkeydown="if(event.key==='Enter')wlAdd()">
             <button class="btn btn--sm btn--secondary" onclick="wlAdd()">+ Add</button>
         </div>
         <div id="wl-error" class="wl-error" style="display:none"></div>
         <div id="watchlist-container">
-            <div class="loading"><div class="spinner"></div> Loading prices...</div>
+            <div class="loading"><div class="spinner"></div> Loading prices…</div>
         </div>
     </div>
-    <div class="card">
-        <div class="card__title">Recent Searches</div>
-        {% if history %}
-        <div style="font-size:13px">
-            {% for h in history %}
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-                <span><strong style="font-family:var(--mono)">{{ h.ticker }}</strong> <span style="color:var(--text-dim)">·</span> {{ h.module }}</span>
-                <span style="color:var(--text-dim);font-size:11px">{{ h.searched_at.strftime('%b %d %H:%M') }}</span>
-            </div>
-            {% endfor %}
+    <div class="dash-side">
+        <div class="card">
+            <div class="dash-card-head"><div class="card__title">Recent searches</div></div>
+            {% if history %}
+                {% for h in history %}
+                <div class="recent-row">
+                    <span class="recent-row__t">{{ h.ticker }}</span>
+                    <span class="recent-row__m">{{ h.module }}</span>
+                    <span class="recent-row__d">{{ h.searched_at.strftime('%b %d · %H:%M') }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state" style="padding:28px 10px"><div class="empty-state__text">No searches yet — try charting a ticker with the search bar above (press <kbd style="font-family:var(--mono)">/</kbd>).</div></div>
+            {% endif %}
         </div>
-        {% else %}
-        <div class="empty-state">
-            <div class="empty-state__text">No recent searches yet. Start exploring.</div>
+        <div class="card dash-note">
+            <div class="card__title">{{ icon('shield') }} Research, not advice</div>
+            <p>TM Analytics - Finance helps you organise information. It doesn't know your goals or risk tolerance and never recommends a trade.</p>
+            <ul>
+                <li>Signals and scores describe past data — they are not buy/sell calls.</li>
+                <li>Prices and filings can be delayed or revised; verify at the source.</li>
+                <li>Talk to a registered professional before making decisions.</li>
+            </ul>
+            <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">Read the Terms of Use →</a>
         </div>
-        {% endif %}
     </div>
 </div>
 
@@ -91,7 +114,7 @@ function loadWatchlist() {
                 c.innerHTML = '<div class="empty-state"><div class="empty-state__text">No tickers yet — add one above.</div></div>';
                 return;
             }
-            cnt.textContent = data.length + '/15';
+            cnt.textContent = data.length + ' / 15';
             let html = '';
             data.forEach(d => {
                 const hasPrice = d.close != null;
@@ -154,5 +177,27 @@ function wlRemove(ticker) {
 }
 
 loadWatchlist();
+
+
+// ── Greeting + session panel ──
+(function(){
+    const h = new Date().getHours();
+    document.getElementById('dashGreet').textContent = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    function t(){
+        const n = new Date();
+        document.getElementById('dashET').textContent = n.toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit'});
+        document.getElementById('dashLocal').textContent = n.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        const lbl = document.getElementById('tmMarketLabel');
+        if (lbl) document.getElementById('dashMkt').textContent = lbl.textContent;
+    }
+    t(); setInterval(t, 15000);
+    const wlc = document.getElementById('wl-count');
+    new MutationObserver(() => { document.getElementById('dashWl').textContent = wlc.textContent ? wlc.textContent.split('/')[0].trim() + ' tickers' : '0 tickers'; })
+        .observe(wlc, {childList:true, characterData:true, subtree:true});
+})();
 </script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 {% endblock %}

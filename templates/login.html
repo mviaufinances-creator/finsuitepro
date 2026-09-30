@@ -1,44 +1,51 @@
 {% extends "base.html" %}
-{% block title %}Sign In — Paralux Terminal{% endblock %}
+{% from "_ui.html" import brand, icon %}
+{% block title %}Sign in — TM Analytics - Finance{% endblock %}
 {% block auth_content %}
-<div class="auth-card">
-    <div class="auth-card__brand">
-        <img src="{{ url_for('static', filename='images/paralux_logo.png') }}" alt="Paralux" class="auth-card__logo">
-        <span class="auth-card__brand-name">Paralux Terminal</span>
-        <span class="auth-card__brand-sub">Paralux Analytics</span>
-    </div>
-    <h2>Sign In</h2>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="flash flash--{{ category }}" style="margin-bottom:16px">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-    <form method="POST" action="{{ url_for('login') }}">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            <label for="email">Email</label>
-            {{ form.email(class="form-control", placeholder="you@example.com", id="email") }}
-            {% for error in form.email.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+<div class="tm-auth">
+    {% set visual_img = 'paralux_theme.png' %}
+    {% set visual_headline = 'See the market <span>clearly.</span>' %}
+    {% set visual_lede = 'One workspace for charts, filings, macro series and news — built to help you research, not to tell you what to do.' %}
+    {% include "_auth_visual.html" %}
+
+    <section class="tm-auth__panel">
+        <div class="tm-auth__form">
+            <h2 class="tm-auth__title">Welcome back</h2>
+            <p class="tm-auth__subtitle">Sign in to your TM Analytics workspace.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}<div class="flash-container">{% for category, message in messages %}<div class="flash flash--{{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login', next=request.args.get('next')) }}" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    {{ form.email(class="form-control", placeholder="you@example.com", id="email", autocomplete="email", autofocus=true) }}
+                    {% for error in form.email.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="tm-pw">
+                        {{ form.password(class="form-control", placeholder="Your password", id="password", autocomplete="current-password") }}
+                        <button type="button" onclick="const i=document.getElementById('password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'SHOW':'HIDE'">SHOW</button>
+                    </div>
+                    {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="checkbox-group">
+                    {{ form.remember(id="remember") }}
+                    <label for="remember">Keep me signed in on this device</label>
+                </div>
+                {{ form.submit(class="btn btn--primary btn--lg btn--block", value="Sign in") }}
+            </form>
+            <p class="tm-auth__alt">New to TM Analytics? <a href="{{ url_for('register') }}">Create an account</a></p>
+
+            <div class="tm-auth__notice">
+                {{ icon('info') }}
+                <span>TM Analytics - Finance is an <strong style="color:var(--text-primary)">informational platform only</strong>. It does not provide investment advice or recommendations. <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">Read the Terms of Use</a>.</span>
+            </div>
+            <p class="tm-auth__legal">&copy; {{ now.year }} TM Analytics &middot; <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">Terms</a></p>
         </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            {{ form.password(class="form-control", placeholder="••••••••", id="password") }}
-            {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
-        </div>
-        <div class="checkbox-group">
-            {{ form.remember(id="remember") }}
-            <label for="remember">Remember me</label>
-        </div>
-        {{ form.submit(class="btn btn--primary") }}
-    </form>
-    <div class="auth-card__footer">
-        Don't have an account? <a href="{{ url_for('register') }}">Create one</a>
-    </div>
-    <div class="auth-card__legal">
-        &copy; 2025 Paralux Analytics &nbsp;·&nbsp;
-        <a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Privacy</a>
-    </div>
+    </section>
 </div>
 {% endblock %}

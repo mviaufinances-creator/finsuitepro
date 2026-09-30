@@ -1,11 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00C0FF"/>
-      <stop offset="100%" stop-color="#FFB020"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="7" fill="#04050B"/>
-  <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-        font-weight="800" font-size="21" fill="url(#g)" text-anchor="middle">P</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"><defs><linearGradient id="e" x1="10" y1="8" x2="38" y2="38" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".55" stop-color="#9FE6FF"/><stop offset="1" stop-color="#3CCBFF"/></linearGradient></defs><rect x="1" y="1" width="46" height="46" rx="13" fill="#070B17"/><path d="M3 27.5 L17 25.2" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M23 9.5 L35 34 H11 Z" fill="#12203F" stroke="url(#e)" stroke-width="2.4" stroke-linejoin="round"/><path d="M29.6 23 L45 16.5" stroke="#3CCBFF" stroke-width="2.6" stroke-linecap="round"/><path d="M30.2 24.3 L45 23.5" stroke="#FFB547" stroke-width="2.6" stroke-linecap="round"/><path d="M30.8 25.6 L45 30.5" stroke="#9D7BFF" stroke-width="2.6" stroke-linecap="round"/></svg>

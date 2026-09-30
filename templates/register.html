@@ -1,43 +1,57 @@
 {% extends "base.html" %}
-{% block title %}Create Account — Paralux Terminal{% endblock %}
+{% from "_ui.html" import brand, icon %}
+{% block title %}Create account — TM Analytics - Finance{% endblock %}
 {% block auth_content %}
-<div class="auth-card">
-    <div class="auth-card__brand">
-        <img src="{{ url_for('static', filename='images/paralux_logo.png') }}" alt="Paralux" class="auth-card__logo">
-        <span class="auth-card__brand-name">Paralux Terminal</span>
-        <span class="auth-card__brand-sub">Paralux Analytics</span>
-    </div>
-    <h2>Create Account</h2>
-    <form method="POST" action="{{ url_for('register') }}">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            <label>Username</label>
-            {{ form.username(class="form-control", placeholder="Choose a username") }}
-            {% for error in form.username.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+<div class="tm-auth">
+    {% set visual_img = 'finance_city.png' %}
+    {% set visual_headline = 'Research with <span>institutional</span> depth.' %}
+    {% set visual_lede = 'Create a free workspace for charting, SEC fundamentals, correlation studies and macro dashboards — for information and education.' %}
+    {% include "_auth_visual.html" %}
+
+    <section class="tm-auth__panel">
+        <div class="tm-auth__form">
+            <div class="tm-steps-label">Step 1 of 2 &middot; Account</div>
+            <div class="tm-steps"><span class="on"></span><span></span></div>
+            <h2 class="tm-auth__title">Create your account</h2>
+            <p class="tm-auth__subtitle">Next, you'll review and accept the Terms of Use before entering.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}<div class="flash-container">{% for category, message in messages %}<div class="flash flash--{{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    {{ form.username(class="form-control", placeholder="Choose a username", id="username", autocomplete="username", autofocus=true) }}
+                    {% for error in form.username.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    {{ form.email(class="form-control", placeholder="you@example.com", id="email", autocomplete="email") }}
+                    {% for error in form.email.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        {{ form.password(class="form-control", placeholder="Min. 6 characters", id="password", autocomplete="new-password") }}
+                        {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm</label>
+                        {{ form.confirm_password(class="form-control", placeholder="Re-enter", id="confirm_password", autocomplete="new-password") }}
+                        {% for error in form.confirm_password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                {{ form.submit(class="btn btn--primary btn--lg btn--block", value="Continue to Terms of Use") }}
+            </form>
+            <p class="tm-auth__alt">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+
+            <div class="tm-auth__notice">
+                {{ icon('info') }}
+                <span>Access requires accepting our Terms of Use, which confirm that TM Analytics is <strong style="color:var(--text-primary)">for informational purposes only</strong> and is not investment advice. <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">Preview the terms</a>.</span>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Email</label>
-            {{ form.email(class="form-control", placeholder="you@example.com") }}
-            {% for error in form.email.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            {{ form.password(class="form-control", placeholder="Min 6 characters") }}
-            {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
-        </div>
-        <div class="form-group">
-            <label>Confirm Password</label>
-            {{ form.confirm_password(class="form-control", placeholder="Re-enter password") }}
-            {% for error in form.confirm_password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
-        </div>
-        {{ form.submit(class="btn btn--primary") }}
-    </form>
-    <div class="auth-card__footer">
-        Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
-    </div>
-    <div class="auth-card__legal">
-        By creating an account you agree to our
-        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-    </div>
+    </section>
 </div>
 {% endblock %}

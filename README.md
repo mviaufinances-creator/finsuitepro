@@ -1,8 +1,8 @@
-# Paralux Terminal
+# TM Analytics - Finance
 
-A full-featured financial analysis terminal built with Flask.
+A full-featured financial research workspace built with Flask.
 
-![Paralux Terminal](static/images/paralux_logo.png)
+An informational market-research workspace. **Not investment advice.**
 
 ## Features
 
@@ -27,6 +27,20 @@ A full-featured financial analysis terminal built with Flask.
 | Frontend | Vanilla JS · Plotly.js · CSS custom properties |
 | Auth | Flask-Login · Flask-Bcrypt · Flask-WTF (CSRF) |
 | Deploy | Gunicorn · Railway / Render |
+
+## Terms of Use gate
+
+- New accounts are signed in and sent to `/terms/accept`; every page and API is blocked until the user scrolls the full Terms and confirms four acknowledgements.
+- An informational reminder appears once per browser session / sign-in.
+- Bump `TERMS_VERSION` in `app.py` to force all users to re-accept.
+- Public read-only copy: `/terms`.
+
+## One-click local run
+
+- macOS / Linux: `./run.sh`
+- Windows: double-click `run.bat`
+
+Then open http://localhost:5000
 
 ## Quick Start (local)
 

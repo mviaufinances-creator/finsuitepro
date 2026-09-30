@@ -1,101 +1,111 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Paralux Terminal{% endblock %}</title>
-    <meta name="description" content="Paralux Terminal — Professional financial analysis for serious investors and analysts.">
-    <meta name="theme-color" content="#04050B">
-    <meta property="og:title" content="Paralux Terminal">
-    <meta property="og:description" content="Institutional-grade technical analysis, SEC fundamentals, macro data, and market intelligence — all in one terminal.">
-    <meta property="og:type" content="website">
-    <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% include "_shell_head.html" %}
+    <title>{% block title %}TM Analytics - Finance{% endblock %}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
     {% block head %}{% endblock %}
 </head>
-<body class="{% if not current_user.is_authenticated %}auth-page{% endif %}">
+{% from "_ui.html" import brand, icon, mark %}
+<body class="{% if current_user.is_authenticated %}tm-app{% else %}auth-page{% endif %}">
     {% if current_user.is_authenticated %}
-    <!-- TOP NAV -->
-    <header class="topnav">
-        <div class="topnav__brand">
-            <img src="{{ url_for('static', filename='images/paralux_logo.png') }}" alt="Paralux" class="topnav__logo">
-            <span class="topnav__title">Paralux Terminal</span>
+    {% set ep = request.endpoint %}
+    {% set _pages = {
+        'dashboard':    ('Workspace', 'Overview'),
+        'technical':    ('Analysis', 'Technical Analysis'),
+        'fundamentals': ('Analysis', 'SEC Fundamentals'),
+        'correlation':  ('Analysis', 'Correlation & Regression'),
+        'signal_page':  ('Analysis', 'Signal Analysis'),
+        'economic':     ('Markets', 'Economic Data'),
+        'global_macro': ('Markets', 'Global Macro'),
+        'listings':     ('Markets', 'Listings Explorer'),
+        'news':         ('Intelligence', 'News & Sentiment'),
+        'alerts_page':  ('Intelligence', 'Alert Center'),
+        'profile':      ('Account', 'Profile & Settings'),
+    } %}
+    {% set _cur = _pages.get(ep, ('Workspace', 'TM Analytics')) %}
+
+    <!-- ═══════════ SIDEBAR ═══════════ -->
+    <aside class="tm-sidebar" id="tmSidebar" aria-label="Primary">
+        <div class="tm-sidebar__head">
+            <a href="{{ url_for('dashboard') }}" style="text-decoration:none">{{ brand() }}</a>
         </div>
-        {% set _labels = {
-            'dashboard':   'Overview',
-            'technical':   'Technical Analysis',
-            'fundamentals':'SEC Fundamentals',
-            'correlation': 'Correlation Matrix',
-            'economic':    'Economic Data',
-            'global_macro': 'Global Macro Dashboard',
-            'news':        'News & Sentiment',
-            'signal_page': 'Signal Analysis',
-            'alerts_page': 'Alert Center',
-            'listings':    'Listings Explorer',
-            'profile':     'Profile & Settings',
-        } %}
-        <div class="topnav__center">{{ _labels.get(request.endpoint, 'Paralux Terminal') }}</div>
-        <div class="topnav__right">
-            <span class="topnav__clock" id="clock"></span>
-            <span class="topnav__status">● Connected</span>
-            <div class="topnav__user" onclick="document.getElementById('userMenu').classList.toggle('show')">
-                <span class="topnav__avatar">{{ current_user.username[0]|upper }}</span>
-                <span class="topnav__username">{{ current_user.username }}</span>
-                <div class="user-menu" id="userMenu">
-                    <a href="{{ url_for('profile') }}">Profile & Settings</a>
-                    <a href="{{ url_for('logout') }}" class="user-menu__logout">Sign Out</a>
+        <nav class="tm-sidebar__nav">
+            {% macro nav(endpoint, label, ico, color) -%}
+            <a href="{{ url_for(endpoint) }}" class="tm-nav-item {% if ep == endpoint %}active{% endif %}" style="--c:{{ color }}" {% if ep == endpoint %}aria-current="page"{% endif %}>
+                {{ icon(ico) }}<span>{{ label }}</span>
+            </a>
+            {%- endmacro %}
+            <div class="tm-nav-group">
+                <div class="tm-nav-group__label">Workspace</div>
+                {{ nav('dashboard', 'Overview', 'home', 'var(--cyan)') }}
+            </div>
+            <div class="tm-nav-group">
+                <div class="tm-nav-group__label">Markets</div>
+                {{ nav('global_macro', 'Global Macro', 'globe', 'var(--teal)') }}
+                {{ nav('economic', 'Economic Data', 'econ', 'var(--magenta)') }}
+                {{ nav('listings', 'Listings Explorer', 'list', 'var(--green)') }}
+            </div>
+            <div class="tm-nav-group">
+                <div class="tm-nav-group__label">Analysis</div>
+                {{ nav('technical', 'Technical Analysis', 'candles', 'var(--blue)') }}
+                {{ nav('fundamentals', 'SEC Fundamentals', 'filing', 'var(--gold)') }}
+                {{ nav('correlation', 'Correlation', 'matrix', 'var(--orange)') }}
+                {{ nav('signal_page', 'Signal Analysis', 'signal', 'var(--mint)') }}
+            </div>
+            <div class="tm-nav-group">
+                <div class="tm-nav-group__label">Intelligence</div>
+                {{ nav('news', 'News & Sentiment', 'news', 'var(--purple)') }}
+                {{ nav('alerts_page', 'Alert Center', 'bell', 'var(--red)') }}
+                <button type="button" class="tm-nav-item" style="--c:var(--gold)" onclick="openJournal()">
+                    {{ icon('journal') }}<span>Trade Journal</span>
+                </button>
+            </div>
+        </nav>
+        <div class="tm-sidebar__foot">
+            <a class="tm-info-badge" href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">
+                {{ icon('info') }}
+                <div><strong>Informational use only</strong><span>Not investment advice. Terms v{{ terms_version }}.</span></div>
+            </a>
+        </div>
+    </aside>
+    <div class="tm-scrim" onclick="document.body.classList.remove('nav-open')"></div>
+
+    <div class="tm-main">
+        <!-- ═══════════ TOP BAR ═══════════ -->
+        <header class="tm-topbar">
+            <button class="tm-topbar__menu" type="button" aria-label="Open navigation" onclick="document.body.classList.toggle('nav-open')">{{ icon('menu') }}</button>
+            <div class="tm-crumb">
+                <span class="tm-crumb__eyebrow">{{ _cur[0] }}</span>
+                <span class="tm-crumb__title">{{ _cur[1] }}</span>
+            </div>
+            <form class="tm-search" onsubmit="return tmQuickSearch(event)" role="search">
+                {{ icon('search') }}
+                <input id="tmSearch" type="text" placeholder="Chart a ticker — AAPL, SPY, BTC-USD" maxlength="12" autocomplete="off" aria-label="Chart a ticker">
+                <kbd>/</kbd>
+            </form>
+            <div class="tm-market" id="tmMarket" title="U.S. equity market session (NYSE, Eastern Time)">
+                <span class="tm-market__dot"></span>
+                <span class="tm-market__label" id="tmMarketLabel">NYSE</span>
+                <span class="tm-market__time" id="clock"></span>
+            </div>
+            <div class="tm-user">
+                <button class="tm-user__btn" type="button" onclick="document.getElementById('userMenu').classList.toggle('show')" aria-haspopup="true">
+                    <span class="tm-avatar">{{ current_user.username[0]|upper }}</span>
+                    <span class="tm-user__name">{{ current_user.username }}</span>
+                    {{ icon('chev') }}
+                </button>
+                <div class="tm-user__menu" id="userMenu">
+                    <div class="tm-user__meta"><strong>{{ current_user.username }}</strong><span>{{ current_user.email }}</span></div>
+                    <a href="{{ url_for('profile') }}">{{ icon('user') }} Profile &amp; settings</a>
+                    <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">{{ icon('doc') }} Terms of Use</a>
+                    <button type="button" onclick="tmShowReminder()">{{ icon('info') }} Informational notice</button>
+                    <a href="{{ url_for('logout') }}" class="danger">{{ icon('logout') }} Sign out</a>
                 </div>
             </div>
-        </div>
-    </header>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar__label">MODULES</div>
-        <a href="{{ url_for('dashboard') }}" class="sidebar__item {% if request.endpoint == 'dashboard' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:var(--cyan)">●</span> Home
-        </a>
-        <a href="{{ url_for('economic') }}" class="sidebar__item sidebar__item--red {% if request.endpoint == 'economic' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:var(--red)">●</span> Economic Data
-        </a>
-        <a href="{{ url_for('global_macro') }}" class="sidebar__item sidebar__item--teal {% if request.endpoint == 'global_macro' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:#14B8A6">●</span> Global Macro
-        </a>
-        <a href="{{ url_for('technical') }}" class="sidebar__item sidebar__item--blue {% if request.endpoint == 'technical' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:var(--blue)">●</span> Technical Analysis
-        </a>
-        <a href="{{ url_for('fundamentals') }}" class="sidebar__item sidebar__item--gold {% if request.endpoint == 'fundamentals' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:var(--gold)">●</span> SEC Fundamentals
-        </a>
-        <a href="{{ url_for('correlation') }}" class="sidebar__item sidebar__item--orange {% if request.endpoint == 'correlation' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:var(--orange)">●</span> Correlation Matrix
-        </a>
-        <a href="{{ url_for('news') }}" class="sidebar__item sidebar__item--purple {% if request.endpoint == 'news' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:var(--purple)">●</span> News & Sentiment
-        </a>
-        <a href="{{ url_for('listings') }}" class="sidebar__item sidebar__item--green {% if request.endpoint == 'listings' %}active{% endif %}">
-            <span class="sidebar__dot" style="color:var(--green)">●</span> Listings Explorer
-        </a>
-        <div class="sidebar__divider"></div>
-        <a href="{{ url_for('signal_page') }}" class="sidebar__item sidebar__signal {% if request.endpoint == 'signal_page' %}active{% endif %}">
-            ◆ Signal Analysis
-        </a>
-        <a href="{{ url_for('alerts_page') }}" class="sidebar__item sidebar__alerts {% if request.endpoint == 'alerts_page' %}active{% endif %}">
-            <svg class="sidebar__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            Alert Center
-        </a>
-        <div class="sidebar__divider"></div>
-        <button class="sidebar__item sidebar__journal-btn" onclick="openJournal()" title="Open Trading Journal">
-            <svg class="sidebar__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            Trade Journal
-        </button>
-        <div class="sidebar__footer">&copy; 2025 Paralux Analytics</div>
-    </aside>
+        </header>
 
     <!-- ═══════════════ TRADING JOURNAL DRAWER ═══════════════ -->
     <div class="tj-overlay" id="tjOverlay" onclick="if(event.target===this)closeJournal()"></div>
@@ -320,52 +330,139 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-container">
-            {% for category, message in messages %}
-            <div class="flash flash--{{ category }}">{{ message }}</div>
-            {% endfor %}
+        <!-- ═══════════ MAIN ═══════════ -->
+        <main class="main-content" id="main">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                <div class="flash flash--{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="tm-footer">
+            <span class="tm-footer__notice">TM Analytics - Finance is an informational platform only — nothing here is investment, financial, tax or legal advice.</span>
+            <span>&copy; {{ now.year }} TM Analytics &middot; <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">Terms of Use</a> &middot; Data may be delayed</span>
+        </footer>
+    </div>
+
+    <!-- ═══════════ LAUNCH REMINDER ═══════════ -->
+    <div class="tm-modal-backdrop" id="tmReminder" {% if session.get('launch_ack') %}hidden{% endif %} role="dialog" aria-modal="true" aria-labelledby="tmReminderTitle">
+        <div class="tm-modal">
+            <div class="tm-reminder__hero"></div>
+            <div class="tm-reminder__body">
+                <div class="tm-reminder__icon">{{ icon('shield') }}</div>
+                <div class="tm-reminder__kicker">Before you continue</div>
+                <h2 class="tm-reminder__title" id="tmReminderTitle">A quick reminder, {{ current_user.first_name or current_user.username }}</h2>
+                <p class="tm-reminder__lede">TM Analytics - Finance is a research and education workspace. Please keep these in mind every session:</p>
+                <ul class="tm-reminder__list">
+                    <li><span style="color:var(--cyan)">{{ icon('info') }}</span><span><b>Information only.</b> Charts, signals, scores and alerts describe data — they are not recommendations to buy, sell or hold anything.</span></li>
+                    <li><span style="color:var(--gold)">{{ icon('scale') }}</span><span><b>Not advice.</b> Nothing here is investment, financial, tax or legal advice. Consult a registered professional before acting.</span></li>
+                    <li><span style="color:var(--purple)">{{ icon('data') }}</span><span><b>Data can be wrong.</b> Third-party data may be delayed, incomplete or inaccurate. Always verify with primary sources.</span></li>
+                </ul>
+                <div class="tm-reminder__meta">
+                    {% if current_user.terms_accepted_at %}You accepted Terms of Use v{{ current_user.terms_version }} on {{ current_user.terms_accepted_at.strftime('%B %d, %Y') }}.{% endif %}
+                    Your decisions, and their outcomes, remain your own.
+                </div>
+                <div class="tm-reminder__actions">
+                    <a class="btn btn--ghost" href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">Read full terms</a>
+                    <button class="btn btn--primary" id="tmReminderOk" type="button" onclick="tmAckReminder()">I understand — continue</button>
+                </div>
+            </div>
         </div>
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </main>
+    </div>
 
     <script>
-    // Clock
-    function updateClock(){
-        const el = document.getElementById('clock');
-        if(el) el.textContent = new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    }
-    setInterval(updateClock,1000); updateClock();
+    // ── Market session clock (NYSE, America/New_York) ──
+    (function(){
+        const clock = document.getElementById('clock'), box = document.getElementById('tmMarket'), lbl = document.getElementById('tmMarketLabel');
+        function tick(){
+            const now = new Date();
+            const et = new Date(now.toLocaleString('en-US', {timeZone:'America/New_York'}));
+            const d = et.getDay(), m = et.getHours()*60 + et.getMinutes();
+            let state = 'closed', text = 'Market closed';
+            if (d > 0 && d < 6) {
+                if (m >= 570 && m < 960) { state = 'open'; text = 'Market open'; }
+                else if (m >= 240 && m < 570) { state = 'pre'; text = 'Pre-market'; }
+                else if (m >= 960 && m < 1200) { state = 'pre'; text = 'After hours'; }
+            }
+            box.className = 'tm-market tm-market--' + state;
+            lbl.textContent = text;
+            clock.textContent = now.toLocaleTimeString('en-US', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit', second:'2-digit'}) + ' ET';
+        }
+        tick(); setInterval(tick, 1000);
+    })();
 
-    // Close user menu on outside click
+    // ── User menu ──
     document.addEventListener('click', e => {
         const m = document.getElementById('userMenu');
-        if(m && !e.target.closest('.topnav__user')) m.classList.remove('show');
+        if (m && !e.target.closest('.tm-user')) m.classList.remove('show');
     });
 
-    // Flash auto-dismiss
-    document.querySelectorAll('.flash').forEach(f => setTimeout(() => f.remove(), 5000));
+    // ── Quick ticker search → Technical Analysis ──
+    function tmQuickSearch(e){
+        e.preventDefault();
+        const v = document.getElementById('tmSearch').value.trim().toUpperCase().replace(/[^A-Z0-9.\-^=]/g,'');
+        if (!v) return false;
+        window.location = "{{ url_for('technical') }}?symbol=" + encodeURIComponent(v);
+        return false;
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+            e.preventDefault(); const s = document.getElementById('tmSearch'); if (s) s.focus();
+        }
+        if (e.key === 'Escape') document.body.classList.remove('nav-open');
+    });
+    window.addEventListener('load', () => {
+        const sym = new URLSearchParams(location.search).get('symbol');
+        const t = document.getElementById('ticker');
+        if (sym && t && typeof runTech === 'function') { t.value = sym.toUpperCase(); runTech(); }
+    });
 
+    // ── Launch reminder (shown once per browser session / sign-in) ──
+    function tmShowReminder(){
+        const r = document.getElementById('tmReminder'); r.hidden = false;
+        document.getElementById('userMenu').classList.remove('show');
+        setTimeout(() => document.getElementById('tmReminderOk').focus(), 50);
+    }
+    function tmAckReminder(){
+        document.getElementById('tmReminder').hidden = true;
+        fetch("{{ url_for('launch_ack') }}", {method:'POST', credentials:'same-origin'}).catch(()=>{});
+    }
+    (function(){
+        const r = document.getElementById('tmReminder');
+        if (!r.hidden) {
+            setTimeout(() => document.getElementById('tmReminderOk').focus(), 60);
+            r.addEventListener('keydown', e => {           // keep focus inside the dialog
+                if (e.key !== 'Tab') return;
+                const f = r.querySelectorAll('a[href],button'); const first = f[0], last = f[f.length-1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            });
+        }
+    })();
+
+    // ── Flash auto-dismiss ──
+    document.querySelectorAll('.flash').forEach(f => setTimeout(() => { f.style.transition='opacity .4s'; f.style.opacity='0'; setTimeout(()=>f.remove(), 400); }, 5000));
     </script>
     {% else %}
     {% block auth_content %}{% endblock %}
     {% endif %}
 
     <!-- ── Global Help Modal ── -->
-<div class="help-modal-overlay" id="helpModal" onclick="if(event.target===this)closeHelp()">
-    <div class="help-modal">
-        <div class="help-modal__header">
-            <h2 class="help-modal__title" id="helpModalTitle">Help</h2>
-            <button class="help-modal__close" onclick="closeHelp()" title="Close">✕</button>
+    <div class="help-modal-overlay" id="helpModal" onclick="if(event.target===this)closeHelp()">
+        <div class="help-modal">
+            <div class="help-modal__header">
+                <h2 class="help-modal__title" id="helpModalTitle">Help</h2>
+                <button class="help-modal__close" onclick="closeHelp()" title="Close">✕</button>
+            </div>
+            <div class="help-modal__body" id="helpModalBody"></div>
         </div>
-        <div class="help-modal__body" id="helpModalBody"></div>
     </div>
-</div>
 
     {% block scripts %}{% endblock %}
 </body>

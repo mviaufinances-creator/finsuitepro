@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+{% include "_shell_head.html" %}
+    <title>Terms of Use — TM Analytics - Finance</title>
+</head>
+{% from "_ui.html" import brand, icon %}
+<body class="terms-body">
+{% set sections = [
+    ('purpose',    'Informational purpose only'),
+    ('no-advice',  'No investment, tax or legal advice'),
+    ('no-recs',    'Signals are not recommendations'),
+    ('regulatory', 'No advisory or dealer relationship'),
+    ('data',       'Data sources & accuracy'),
+    ('models',     'Models, backtests & hypotheticals'),
+    ('risk',       'Investment risk'),
+    ('you',        'Your responsibilities'),
+    ('tools',      'Journal, alerts & watchlists'),
+    ('account',    'Accounts & acceptable use'),
+    ('privacy',    'Your information'),
+    ('warranty',   'No warranties'),
+    ('liability',  'Limitation of liability'),
+    ('indemnity',  'Indemnification'),
+    ('changes',    'Changes & termination'),
+    ('law',        'Governing law & contact'),
+] %}
+
+<div class="tm-terms {% if mode == 'read' %}tm-terms--read{% endif %}" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+    <header class="tm-terms__head">
+        {{ brand() }}
+        <div class="tm-terms__head-text">
+            <div class="tm-terms__kicker">{% if mode == 'accept' %}Step 2 of 2 &middot; Required before entry{% else %}Legal{% endif %}</div>
+            <h1 class="tm-terms__title" id="termsTitle">Terms of Use <em>&amp; Informational Disclaimer</em></h1>
+        </div>
+        <div class="tm-terms__meta">
+            <span class="tm-chip">Version <b>{{ terms_version }}</b></span>
+            <span class="tm-chip">Effective <b>Sept 30, 2026</b></span>
+            <span class="tm-chip">~8 min read</span>
+            {% if mode == 'read' %}<a class="btn btn--ghost btn--sm" href="{{ url_for('index') }}">Back to app</a>{% endif %}
+        </div>
+    </header>
+
+    <div class="tm-terms__grid">
+        <nav class="tm-terms__toc" aria-label="Sections">
+            <div class="tm-terms__toc-label">Contents</div>
+            {% for id, title in sections %}
+            <a href="#{{ id }}" data-sec="{{ id }}"><span>{{ '%02d' % loop.index }}</span>{{ title }}</a>
+            {% endfor %}
+        </nav>
+
+        <div class="tm-terms__scroll" id="termsScroll">
+            <div class="tm-terms__progress"><i id="termsBar"></i></div>
+            <article class="tm-terms__doc">
+
+                <div class="tm-terms__callout">
+                    {{ icon('alert') }}
+                    <p><strong>The short version:</strong> TM Analytics - Finance ("TM Analytics", "we", "us") is a research and education tool. Everything you see here — prices, charts, indicators, scores, "signals", regimes, alerts, news sentiment and model output — is <strong>information, not advice</strong>. We do not know your finances, goals or risk tolerance, we do not recommend any security or strategy, and we are not responsible for decisions you make. If you need advice, speak with a qualified, registered professional.</p>
+                </div>
+
+                <div class="tm-terms__summary">
+                    <div style="--c:var(--cyan)"><b>What it is</b><p>Tools to explore market data, filings and macro indicators for your own learning and research.</p></div>
+                    <div style="--c:var(--gold)"><b>What it is not</b><p>A financial adviser, broker, dealer or portfolio manager. It never executes trades or holds money.</p></div>
+                    <div style="--c:var(--purple)"><b>Data caveats</b><p>Third-party data can be delayed, revised, incomplete or simply wrong. Verify before relying on it.</p></div>
+                    <div style="--c:var(--mint)"><b>Your call</b><p>You alone decide what to do with any information here, and you alone bear the outcome.</p></div>
+                </div>
+
+                <section id="purpose">
+                    <h2><span>01</span>Informational purpose only</h2>
+                    <p>TM Analytics provides software tools and content — including charting, technical indicators, SEC filing data, economic series, correlation and regression analysis, macro dashboards, listings search, news with sentiment scoring, and composite signal models — <strong>solely for general informational and educational purposes</strong>.</p>
+                    <p>The platform is designed to help you organize and visualize publicly available information. It is not designed, intended or suitable to serve as the basis for any investment, trading, financial, tax, accounting or legal decision.</p>
+                </section>
+
+                <section id="no-advice">
+                    <h2><span>02</span>No investment, tax or legal advice</h2>
+                    <p>Nothing on TM Analytics constitutes, or should be construed as, investment advice, financial advice, trading advice, tax advice, legal advice, accounting advice, or any other professional advice. Content is general in nature and <strong>does not take into account your personal objectives, financial situation, investment knowledge, time horizon or risk tolerance</strong>.</p>
+                    <p>No content is an offer, solicitation, invitation or inducement to buy, sell or hold any security, derivative, cryptocurrency, commodity or other financial instrument, or to adopt any investment strategy.</p>
+                </section>
+
+                <section id="no-recs">
+                    <h2><span>03</span>Signals, scores and labels are not recommendations</h2>
+                    <p>Some features produce outputs that use words such as "Buy", "Sell", "Bullish", "Bearish", "Strong", "Risk-on", "Regime", "Stress", "Score", "Signal" or colour-coded ratings. These are <strong>mechanical, rules-based or statistical descriptions of historical data</strong>. They are generated automatically, without human review, and without any knowledge of you.</p>
+                    <ul>
+                        <li>They are not personalized recommendations and are not suitability assessments.</li>
+                        <li>They can and do change, conflict with one another, and be wrong.</li>
+                        <li>AI- or model-generated summaries and sentiment scores may misread or misstate their source material.</li>
+                    </ul>
+                </section>
+
+                <section id="regulatory">
+                    <h2><span>04</span>No advisory, fiduciary or dealer relationship</h2>
+                    <p>TM Analytics is not registered as an adviser, portfolio manager, investment dealer, broker or exchange with any securities regulator. Using the platform does not create an adviser–client, broker–customer, fiduciary or any other professional relationship between you and TM Analytics or any person associated with it.</p>
+                    <p>Any views expressed by individuals associated with TM Analytics, in any capacity, are their own and are not made on behalf of any employer or registered firm.</p>
+                </section>
+
+                <section id="data">
+                    <h2><span>05</span>Data sources &amp; accuracy</h2>
+                    <p>Market, fundamental, economic and news data are obtained from third parties, which may include Yahoo Finance (via yfinance), SEC EDGAR, the Federal Reserve Bank of St. Louis (FRED) and Polygon.io, among others. We do not control these sources and <strong>do not guarantee that any data is accurate, complete, timely, or free of errors or omissions</strong>.</p>
+                    <ul>
+                        <li>Prices may be delayed and are not suitable for trading decisions.</li>
+                        <li>Financial statement data may be restated, mis-tagged in filings, or incorrectly mapped.</li>
+                        <li>Economic series are frequently revised after first release.</li>
+                        <li>Sources may be interrupted, rate-limited or discontinued without notice.</li>
+                    </ul>
+                    <p>Always confirm material information against the original primary source (for example, the issuer's official filings) before relying on it.</p>
+                </section>
+
+                <section id="models">
+                    <h2><span>06</span>Models, backtests &amp; hypothetical results</h2>
+                    <p>Backtests, simulated portfolios, regressions, correlation studies, regime models and similar analyses are <strong>hypothetical</strong>. They are built with the benefit of hindsight, rely on simplifying assumptions, and generally ignore or under-state real-world factors such as fees, commissions, taxes, slippage, liquidity, market impact and execution risk.</p>
+                    <p>Hypothetical or past performance is not a reliable indicator of future results. Statistical relationships (such as correlations or factor loadings) are unstable and can break down without warning.</p>
+                </section>
+
+                <section id="risk">
+                    <h2><span>07</span>Investment risk</h2>
+                    <p>Investing and trading involve substantial risk, <strong>including the possible loss of all of your principal</strong>. Leveraged products, options, futures, foreign exchange and crypto-assets carry heightened risk and may not be suitable for many investors. Market conditions can change rapidly, and losses can exceed expectations.</p>
+                </section>
+
+                <section id="you">
+                    <h2><span>08</span>Your responsibilities</h2>
+                    <p>You are solely responsible for evaluating the merits and risks of any information you obtain here and for every investment or financial decision you make. Before acting, you should conduct your own independent research and consult a qualified, appropriately registered professional who understands your circumstances.</p>
+                </section>
+
+                <section id="tools">
+                    <h2><span>09</span>Trade journal, alerts &amp; watchlists</h2>
+                    <p>The Trade Journal, Alert Center and watchlists are personal record-keeping tools. They <strong>do not place, route or execute orders</strong>, do not connect to any brokerage account, and do not hold funds or securities. Alerts are checked on a best-efforts basis and may be delayed, triggered incorrectly, or not triggered at all; do not rely on them to manage risk or positions.</p>
+                </section>
+
+                <section id="account">
+                    <h2><span>10</span>Accounts &amp; acceptable use</h2>
+                    <p>You must provide accurate registration information and keep your credentials confidential. You are responsible for activity under your account. You agree not to:</p>
+                    <ul>
+                        <li>redistribute, resell or publicly republish data or content obtained from the platform;</li>
+                        <li>scrape, overload, reverse-engineer or interfere with the platform or its data providers;</li>
+                        <li>use the platform for any unlawful purpose, including market manipulation or misleading others; or</li>
+                        <li>represent platform output to anyone as personalized advice or as endorsed by TM Analytics.</li>
+                    </ul>
+                </section>
+
+                <section id="privacy">
+                    <h2><span>11</span>Your information</h2>
+                    <p>We store the information needed to operate your account: your username, email, hashed password, optional profile details, watchlist, saved alerts, journal entries, recent searches, and the date and version of the Terms you accepted. We do not sell your personal information. You may delete your account at any time from Profile &amp; Settings.</p>
+                </section>
+
+                <section id="warranty">
+                    <h2><span>12</span>No warranties</h2>
+                    <p class="caps">The platform and all content are provided "as is" and "as available", without warranties of any kind, express or implied, including warranties of accuracy, completeness, timeliness, merchantability, fitness for a particular purpose, availability or non-infringement, to the fullest extent permitted by law.</p>
+                </section>
+
+                <section id="liability">
+                    <h2><span>13</span>Limitation of liability</h2>
+                    <p class="caps">To the fullest extent permitted by law, TM Analytics and its owners, contributors and data providers will not be liable for any direct, indirect, incidental, consequential, special or punitive damages, or for any trading or investment losses, lost profits or lost data, arising from or related to your use of, or inability to use, the platform or any information on it — even if advised of the possibility of such damages.</p>
+                    <p>Some jurisdictions do not allow certain limitations; in those jurisdictions our liability is limited to the maximum extent permitted.</p>
+                </section>
+
+                <section id="indemnity">
+                    <h2><span>14</span>Indemnification</h2>
+                    <p>You agree to indemnify and hold harmless TM Analytics and its owners and contributors from claims, losses and expenses (including reasonable legal fees) arising from your use of the platform, your decisions based on it, or your breach of these Terms.</p>
+                </section>
+
+                <section id="changes">
+                    <h2><span>15</span>Changes &amp; termination</h2>
+                    <p>We may update these Terms. When we make a material change, the version number above changes and <strong>you will be asked to review and accept the new Terms before continuing</strong>. We may suspend or end access to the platform, or any feature, at any time. Sections that by their nature should survive termination (including 02–07 and 12–14) will survive.</p>
+                </section>
+
+                <section id="law">
+                    <h2><span>16</span>Governing law &amp; contact</h2>
+                    <p>These Terms are governed by the laws of the Province of Québec and the federal laws of Canada applicable therein, without regard to conflict-of-law rules. If any provision is found unenforceable, the remaining provisions stay in effect.</p>
+                    <p>Questions about these Terms can be sent through the contact details published by the platform operator.</p>
+                </section>
+
+                <div class="tm-terms__end" id="termsEnd">
+                    {% if mode == 'accept' %}You've reached the end. Confirm the acknowledgements below to enter TM Analytics.{% else %}End of Terms of Use &middot; Version {{ terms_version }}{% endif %}
+                </div>
+            </article>
+        </div>
+    </div>
+
+    {% if mode == 'accept' %}
+    <form class="tm-terms__foot" method="POST" action="{{ url_for('terms_accept') }}" id="termsForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}<div style="grid-column:1/-1">{% for category, message in messages %}<div class="flash flash--{{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+        {% endwith %}
+        <div class="tm-terms__status" id="termsStatus">{{ icon('lock') }}<span>Scroll through the full Terms to unlock the acknowledgements.</span></div>
+        <div class="tm-acks locked" id="termsAcks">
+            <label class="tm-ack"><input type="checkbox" name="ack_info" disabled> <span>I understand TM Analytics is an <strong>informational and educational platform only</strong>.</span></label>
+            <label class="tm-ack"><input type="checkbox" name="ack_no_advice" disabled> <span>Nothing on it is investment, financial, tax or legal advice, or a recommendation to buy, sell or hold.</span></label>
+            <label class="tm-ack"><input type="checkbox" name="ack_risk" disabled> <span>I am solely responsible for my decisions, and investing can result in the loss of my principal.</span></label>
+            <label class="tm-ack"><input type="checkbox" name="ack_data" disabled> <span>Data, signals and models may be delayed or inaccurate and are provided "as is", without warranty.</span></label>
+        </div>
+        <div class="tm-terms__actions">
+            <button type="submit" class="btn btn--primary btn--lg" id="termsAccept" disabled>Accept &amp; enter</button>
+            <a href="{{ url_for('logout') }}">Decline and sign out</a>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+<script>
+(function(){
+    const sc = document.getElementById('termsScroll'), bar = document.getElementById('termsBar');
+    const links = [...document.querySelectorAll('.tm-terms__toc a')];
+    const secs = links.map(a => document.getElementById(a.dataset.sec));
+    const acks = document.getElementById('termsAcks');
+    const btn = document.getElementById('termsAccept');
+    const status = document.getElementById('termsStatus');
+    let unlocked = false;
+
+    function update(){
+        const max = sc.scrollHeight - sc.clientHeight;
+        const p = max <= 0 ? 1 : sc.scrollTop / max;
+        bar.style.width = (p * 100).toFixed(1) + '%';
+        let cur = 0;
+        secs.forEach((s, i) => { if (s.offsetTop - 80 <= sc.scrollTop) cur = i; });
+        if (p > 0.97) cur = secs.length - 1;
+        links.forEach((a, i) => { a.classList.toggle('current', i === cur); if (i <= cur) a.classList.add('seen'); });
+        if (!unlocked && acks && p > 0.97) unlock();
+    }
+    function unlock(){
+        unlocked = true;
+        acks.classList.remove('locked');
+        acks.querySelectorAll('input').forEach(i => i.disabled = false);
+        status.classList.add('ok');
+        status.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>Thanks for reading. Confirm each statement to continue.</span>';
+    }
+    if (acks) {
+        acks.addEventListener('change', () => {
+            btn.disabled = ![...acks.querySelectorAll('input')].every(i => i.checked);
+        });
+    }
+    sc.addEventListener('scroll', update, {passive:true});
+    window.addEventListener('resize', update);
+    update();
+})();
+</script>
+</body>
+</html>
